@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Load only the product's own fonts. Keep every font the page uses in FONTS at the bottom, or capture can run before it loads. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Replace these tokens and the look with the product's real brand. */
+:root{color-scheme:dark;--bg:#111;--fg:#fff;--accent:#f60;--muted:#aaa;--sans:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+#wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+#box{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;overflow:hidden;background:var(--bg)}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:var(--bg);--pad:100px}
+/* 9:16. Instagram covers the top 170 and bottom 350 of this 1600 tall stage, so scenes sit between them. */
+.reel #wrap{max-width:440px}.reel #box{aspect-ratio:9/16}
+.reel #stage{width:900px;height:1600px;--pad:56px}
+body.cap{padding:0;margin:0}body.cap #wrap{max-width:none;gap:0}body.cap .ctrl{display:none}body.cap #box{width:1600px;height:900px}
+.reel body.cap #box{width:900px;height:1600px}
+.ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ctrl button{height:36px;padding:0 14px;border:1px solid #444;background:#1b1b1b;color:#fff;font:500 14px var(--sans);cursor:pointer}
+.ctrl button:focus-visible,#scrub:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ctrl button.on{background:var(--accent);color:#000}
+#scrub{flex:1;min-width:140px;accent-color:var(--accent)}
+#time{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Scenes */
+.sc{position:absolute;inset:0;visibility:hidden;padding:0 var(--pad);display:flex;flex-direction:column;justify-content:center}
+.reel .sc{padding-top:170px;padding-bottom:350px}
+h1{margin:0;font-size:110px;line-height:1.05;font-weight:700;letter-spacing:-.03em}
+.reel h1{font-size:96px}
+.ln{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em}
+.ln>span{display:block}
+.sub{margin-top:24px;font-size:30px;line-height:1.4;color:var(--muted)}
+</style>
+<script>{{REELFLAG}}</script>
+
+<div id="wrap">
+  <div id="box"><div id="stage">
+    <!-- Example scenes. data-f and data-t set when a scene shows. Inside it:
+         data-a="t"  fades and lifts in at t      data-o="t"  disappears at t       data-dy="n"  lift distance
+         data-r="t"  rises out of a .ln mask      data-w="t"  wipes in from the left
+         data-c="from,to,t0,t1,decimals,suffix"   counts a number up -->
+    <section class="sc" data-f="0" data-t="3">
+      <h1><span class="ln"><span data-r="0.2">Replace this scene</span></span></h1>
+      <div class="sub" data-a="0.9">Everything on screen comes from the real product</div>
+    </section>
+    <section class="sc" data-f="3" data-t="6">
+      <h1 data-c="0,71,3.2,4.6,0,%">0%</h1>
+      <div class="sub" data-a="3.4">A number that counts up</div>
+    </section>
+  </div></div>
+
+  <div class="ctrl">
+    <button id="pp" type="button">Pause</button>
+    <button id="rs" type="button">Restart</button>
+    <button id="snd" type="button" aria-pressed="false">Sound on</button>
+    <audio id="au" preload="auto" src="{{AUDIO}}"></audio>
+    <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Scrub through the video">
+    <span id="time"></span>
+  </div>
+  <div class="ctrl" id="jumps"></div>
+</div>
+
+<script>
+/* ---- Helpers: declared first so film code can use them anywhere ---- */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const REEL=document.documentElement.classList.contains('reel'),W=REEL?900:1600,H=REEL?1600:900;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const lerp=(a,b,p)=>a+(b-a)*p;
+// Ease-out that reaches 1 exactly with zero speed. An exponential ease never lands, so text creeps and shimmers.
+const eo=x=>x>=1?1:1-Math.pow(1-x,4);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+// Overshoot for graphics only (icons, shapes). Never on text: a bounce reads as wobble.
+const back=x=>{const c=1.5;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const seg=(t,a,b,e=eo)=>e(clamp((t-a)/(b-a)));
+function kf(t,p,e=eio){if(t<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++)if(t<=p[i][0])return lerp(p[i-1][1],p[i][1],e((t-p[i-1][0])/(p[i][0]-p[i-1][0])));return p[p.length-1][1]}
+const bump=(t,T,d=.22)=>{const x=(t-T+d/2)/d;return x<0||x>1?0:Math.sin(x*Math.PI)};
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
+/* Use vis for top-level layers. A child of a hidden layer must use 'inherit', never 'visible', or it shows through. */
+const vis=(e,on)=>{e.style.visibility=on?'inherit':'hidden'};
+
+/* ---- Film settings ---- */
+const DUR=6;                                     // must equal the length in score.py
+const SCENES=[['Start',0],['Number',3]];         // jump buttons
+const FONTS=['400 16px Inter','500 16px Inter','700 100px Inter'];
+
+/* Add film-specific animation here. It runs every frame with the current time.
+   Rule: set every property from t alone, so seeking backward and frame-by-frame capture stay exact. */
+function scene(t){
+}
+
+/* ---- Engine ---- */
+const SC=$$('.sc').map(e=>({e,f:+e.dataset.f,t:+e.dataset.t}));
+const REV=$$('[data-a]').map(e=>({e,a:+e.dataset.a,o:e.dataset.o?+e.dataset.o:null,dy:e.dataset.dy?+e.dataset.dy:16}));
+const RISE=$$('[data-r]').map(e=>({e,a:+e.dataset.r}));
+const WIP=$$('[data-w]').map(e=>({e,a:+e.dataset.w}));
+const CNT=$$('[data-c]').map(e=>{const[f,t,a,b,d,x='']=e.dataset.c.split(',');return{e,f:+f,to:+t,a:+a,b:+b,d:+d,x}});
+function render(t){T=t;
+  SC.forEach(s=>{s.e.style.visibility=t>=s.f&&t<s.t?'visible':'hidden'});
+  REV.forEach(r=>{const p=seg(t,r.a,r.a+.34)*(r.o!==null&&t>=r.o?0:1);r.e.style.opacity=p;r.e.style.transform=p>=1?'none':`translateY(${(1-p)*r.dy}px)`});
+  RISE.forEach(r=>{const p=seg(t,r.a,r.a+.5);r.e.style.transform=p>=1?'none':`translateY(${(1-p)*116}%)`});
+  WIP.forEach(w=>{const p=clamp((t-w.a)/.42);w.e.style.clipPath=`inset(-20px ${100-p*100}% -20px 0)`});
+  CNT.forEach(c=>{c.e.textContent=lerp(c.f,c.to,seg(t,c.a,c.b,eio)).toLocaleString('en-US',{minimumFractionDigits:c.d,maximumFractionDigits:c.d})+c.x});
+  scene(t);ui(t)}
+const jb=[];SCENES.forEach(s=>{const b=document.createElement('button');b.type='button';b.textContent=s[0];b.onclick=()=>seek(s[1]+.05);$('#jumps').appendChild(b);jb.push(b)});
+function ui(t){$('#scrub').value=t/DUR*1000;$('#time').textContent=fmt(t)+' / '+fmt(DUR);let c=0;SCENES.forEach((s,i)=>{if(t>=s[1])c=i});jb.forEach((b,i)=>b.classList.toggle('on',i==c))}
+let T=0,playing=true,last=0,sound=false;const au=$('#au');
+function seek(t){render(clamp(t,0,DUR))}
+function syncAudio(){if(!sound||!playing){if(!au.paused)au.pause();return}if(Math.abs(au.currentTime-T)>.12)au.currentTime=T;if(au.paused)au.play().catch(()=>{})}
+function loop(n){if(playing){const d=Math.min(.05,(n-last)/1000);let nt=T+d;if(nt>=DUR){nt=DUR;playing=false;$('#pp').textContent='Play'}render(nt)}syncAudio();last=n;requestAnimationFrame(loop)}
+$('#snd').onclick=()=>{sound=!sound;$('#snd').textContent=sound?'Sound off':'Sound on';$('#snd').setAttribute('aria-pressed',sound);syncAudio()};
+$('#pp').onclick=()=>{if(T>=DUR)T=0;playing=!playing;$('#pp').textContent=playing?'Pause':'Play'};
+$('#rs').onclick=()=>{seek(0);playing=true;$('#pp').textContent='Pause'};
+$('#scrub').oninput=e=>{playing=false;$('#pp').textContent='Play';seek(e.target.value/1000*DUR)};
+function fit(){if(document.body.classList.contains('cap')){$('#stage').style.transform='none';return}$('#stage').style.transform=`scale(${$('#box').clientWidth/W})`}
+addEventListener('resize',fit);fit();
+window.__meta={W,H,DUR};
+window.__seek=t=>{render(t)};
+window.__capture=()=>{document.body.classList.add('cap');playing=false;fit()};
+// Wait for fonts and every image, including CSS background images, so the first captured frames are complete.
+const imgs=()=>{const u=new Set([...document.images].map(i=>i.src));document.querySelectorAll('*').forEach(e=>{const m=getComputedStyle(e).backgroundImage.match(/url\(["']?([^"')]+)/);if(m)u.add(m[1])});return [...u].filter(Boolean).map(s=>new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src=s}))};
+window.__ready=(async()=>{await Promise.all(FONTS.map(f=>document.fonts.load(f)));await document.fonts.ready;await Promise.all(imgs())})();
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){playing=false;$('#pp').textContent='Play';seek(DUR*.9)}else{seek(0);window.__ready.then(()=>{last=performance.now();requestAnimationFrame(loop)})}
+</script>

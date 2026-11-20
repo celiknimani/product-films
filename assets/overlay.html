@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="sq"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sponsor Banner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#121212;--i5:#777777;--lime:#c9fe6e;--spark:#121212;--grad:#c9fe6e;--bg:#f1f1f1;--fg:#121212;--rule:#d4d4d4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--fg:#f1f1f1;--rule:#323232}}
+:root[data-theme="dark"]{--bg:#121212;--fg:#f1f1f1;--rule:#323232}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:Geist,system-ui,sans-serif;padding:16px}
+#wrap{max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+#box{position:relative;width:100%;aspect-ratio:9/16;overflow:hidden;border-radius:14px}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden}
+#host{position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,#6b5a70,transparent 70%),radial-gradient(50% 40% at 75% 70%,#7a4a3a,transparent 70%),linear-gradient(180deg,#3a3036,#1f1a1d);}
+#host span{position:absolute;left:0;right:0;top:620px;text-align:center;font:500 34px Geist;color:rgba(255,255,255,.35);letter-spacing:.04em}
+.ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrl button{height:36px;padding:0 14px;border:1px solid var(--rule);background:transparent;color:var(--fg);font:500 14px Geist;border-radius:8px;cursor:pointer}
+.ctrl button:focus-visible,#scrub:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+#scrub{flex:1;min-width:120px;accent-color:var(--fg)}
+#time{font:13px Geist;font-variant-numeric:tabular-nums;opacity:.7}
+body.cap{padding:0;background:transparent}body.cap #wrap{max-width:none;gap:0}body.cap .ctrl,body.cap #host{display:none}body.cap #box{width:1080px;height:1920px;border-radius:0}
+body.green #stage{background:#00ff00}
+
+/* The banner */
+#card{position:absolute;left:120px;top:1190px;width:840px;height:380px;border-radius:44px;background:rgba(255,255,255,.93);box-shadow:0 18px 50px rgba(20,8,14,.28);overflow:hidden;color:var(--ink);font-family:Geist,sans-serif}
+body.green #card{background:#fff;box-shadow:none}
+.st{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;visibility:hidden}
+.l{display:inline-block}
+#gl1,#gl2{position:absolute;top:-60px;bottom:-60px;width:3px;background:rgba(11,11,12,.13);transform:rotate(24deg)}
+#gl2{width:9px;background:rgba(11,11,12,.07)}
+/* 1 logo */
+.lock{position:relative;display:flex;flex-direction:column;align-items:center}
+.wm{font-size:72px;font-weight:600;letter-spacing:.08em;line-height:1;padding-left:.08em}
+#sk{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--spark);box-shadow:0 0 0 4px var(--lime),0 0 28px rgba(201,254,110,.9);left:50%;top:50%;margin:-11px 0 0 -11px}
+#rl{width:560px;height:4px;margin-top:26px;background:var(--ink);transform-origin:0 50%}
+
+/* 2 and 3 messages */
+.hd{font-size:84px;font-weight:500;letter-spacing:-.045em;line-height:1.04;text-align:center;color:#121212}.hd div+div{margin-top:2px}.ac .l{box-shadow:inset 0 -.32em 0 var(--lime)}.fit div{white-space:nowrap}
+.bars{display:flex;align-items:flex-end;gap:8px;height:70px}.bars i{display:block;width:19px;border-radius:4px;background:#e5e5e5}.bars i:first-child{background:var(--grad)}
+/* 4 url */
+#s6{flex-direction:column;gap:16px}#s6 .u{font-size:92px;font-weight:500;letter-spacing:-.045em}#s6 .k{font:500 24px 'Geist Mono',monospace;letter-spacing:.08em;color:var(--i5)}
+</style></head><body>
+<div id="wrap">
+<div id="box"><div id="stage">
+  <div id="host"><span>Videoja e krijuesit</span></div>
+  <div id="card">
+    <div class="st" id="s1"><div class="lock"><div class="wm kl" data-k="1.55">CELIK NIMANI</div><div id="sk"></div><div id="rl"></div></div></div>
+    <div class="st" id="s2"><div class="hd fit"><div class="kl" data-k="3.95">Inteligjencë artificiale</div><div class="kl" data-k="4.2">që punon për</div><div class="kl ac" data-k="4.4">biznesin tënd</div></div></div>
+    <div class="st" id="s3"><div class="hd fit"><div class="kl" data-k="8.75">Agjentë që</div><div class="kl ac" data-k="8.95">lehtësojnë punën</div></div></div>
+    <div class="st" id="s6"><div class="k kl" data-k="13.35">Na shkruaj</div><div class="u kl" data-k="13.5">celiknimani.com</div></div>
+    <div id="gl1"></div><div id="gl2"></div>
+  </div>
+</div></div>
+<div class="ctrl"><button id="pp" type="button">Ndalo</button><button id="rs" type="button">Rifillo</button><input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Afati kohor"><span id="time"></span></div>
+</div>
+<script>
+const DUR=20,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),lerp=(a,b,p)=>a+(b-a)*p;
+const eo=x=>x>=1?1:1-Math.pow(1-x,4),eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const back=x=>{const c=1.6;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const seg=(t,a,b,e=eo)=>e(clamp((t-a)/(b-a)));
+$$('.kl').forEach(el=>{const walk=n=>{[...n.childNodes].forEach(c=>{if(c.nodeType===3){const f=document.createDocumentFragment();[...c.textContent].forEach(ch=>{if(ch===' '){f.appendChild(document.createTextNode(' '))}else{const s=document.createElement('span');s.className='l';s.textContent=ch;f.appendChild(s)}});c.replaceWith(f)}else walk(c)})};walk(el)});
+const ST=[['#s1',1,3.8],['#s2',3.8,8.6],['#s3',8.6,13.2],['#s6',13.2,18]];
+function render(t){T=t;
+  const inn=seg(t,1,1.5,eo),out=seg(t,17.6,18,eio),c=$('#card');
+  c.style.visibility=t>=1&&t<18?'visible':'hidden';
+  c.style.opacity=clamp((t-1)/.18)*(1-out);
+  c.style.transform=`translateY(${(1-inn)*70+out*40}px) scale(${lerp(.86,1,inn)*lerp(1,.94,out)})`;
+  ST.forEach(([id,a,b])=>{const e=$(id),on=t>=a&&t<b;e.style.visibility=on?'inherit':'hidden';if(!on)return;
+    const x=seg(t,b-.26,b,x=>x*x);e.style.opacity=1-x;e.style.transform=`translateY(${-x*40}px)`});
+  $$('.kl').forEach(el=>{const a=+el.dataset.k;el.querySelectorAll('.l').forEach((l,i)=>{const p=seg(t,a+i*.022,a+i*.022+.42);l.style.transform=p>=.999?'none':`translateY(${(1-p)*.55}em)`;l.style.opacity=clamp(p*2.4)})});
+  const sp=seg(t,1.2,1.5,back),sd=seg(t,1.5,1.9,eio),sr=seg(t,1.9,2.6,eio);$('#sk').style.transform=`translate(${lerp(-280,280,sr)*(sd>0?1:0)*1+(1-sd)*0+(sd>0&&sr==0?lerp(0,-280,sd)-(-280):0)}px,${lerp(0,72,sd)}px) scale(${sp*lerp(1,.55,sd)})`;$('#sk').style.opacity=1-seg(t,2.6,2.9,x=>x);
+  $('#rl').style.transform=`scaleX(${seg(t,1.9,2.6,eio)})`;
+  const g=[1.05,3.8,8.6,13.2].find(k=>t>=k&&t<k+.7);[['#gl1',0],['#gl2',.06]].forEach(([id,d])=>{const e=$(id);if(g===undefined){e.style.visibility='hidden';return}e.style.visibility='inherit';e.style.left=lerp(-120,960,eio(clamp((t-g-d)/.6)))+'px'});
+  ui(t)}
+function ui(t){$('#scrub').value=t/DUR*1000;$('#time').textContent=t.toFixed(1)+' / '+DUR+' s'}
+let T=0,playing=true,last=0;
+function loop(n){if(playing){let nt=T+Math.min(.05,(n-last)/1000);if(nt>=DUR){nt=0}render(nt)}last=n;requestAnimationFrame(loop)}
+$('#pp').onclick=()=>{playing=!playing;$('#pp').textContent=playing?'Ndalo':'Luaj'};
+$('#rs').onclick=()=>{render(0);playing=true;$('#pp').textContent='Ndalo'};
+$('#scrub').oninput=e=>{playing=false;$('#pp').textContent='Luaj';render(e.target.value/1000*DUR)};
+function fit(){if(document.body.classList.contains('cap')){$('#stage').style.transform='none';return}$('#stage').style.transform=`scale(${$('#box').clientWidth/1080})`}
+addEventListener('resize',fit);fit();
+window.__meta={DUR,W:1080,H:1920};window.__seek=t=>render(t);
+window.__capture=green=>{document.body.classList.add('cap');if(green)document.body.classList.add('green');playing=false;fit()};
+function autofit(){$$('.fit').forEach(f=>{let fs=parseFloat(getComputedStyle(f).fontSize);const w=()=>Math.max(...[...f.children].map(d=>d.scrollWidth));while(w()>740&&fs>30){fs-=1;f.style.fontSize=fs+'px'}})}
+window.__ready=(async()=>{await Promise.all(['500 16px Geist','600 16px Geist','700 16px Geist','500 16px "Geist Mono"'].map(f=>document.fonts.load(f)));await document.fonts.ready;autofit()})();
+render(0);window.__ready.then(()=>{last=performance.now();requestAnimationFrame(loop)});
+</script></body></html>
